@@ -1,0 +1,24 @@
+{
+	"name": "soafd",
+	"version": "1.0.0",
+	"description": "Stocks, Options, and Futures Data",
+	"main": "index.js",
+	"scripts": {
+		"test": "echo \"Error: no test specified\" && exit 1"
+	},
+	"keywords": [
+		"soafd",
+		"stocks",
+		"options",
+		"futures",
+		"stock",
+		"options",
+		"futures",
+		"data"
+	],
+	"author": "ZXColt",
+	"license": "ISC",
+	"dependencies": {
+		"axios": "^0.21.1"
+	}
+}
