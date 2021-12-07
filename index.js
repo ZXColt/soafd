@@ -7,7 +7,14 @@ var blessed = require('blessed'),
 // first run is to initally draw the table.
 var firstRun = true;
 tickers = [];
-futureIDs = [133];
+/*
+133 - ES (S&P500)
+146 - NQ (NASDAQ)
+8314 - RTY (RUSSELL)
+318 - YM (DOW)
+8478 - BTC (BITCOIN)
+*/
+futureIDs = [8478]; //133, 146, 8314, 318,
 var displayData = [];
 
 // table = contrib.table({
