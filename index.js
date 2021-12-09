@@ -5,7 +5,7 @@ var blessed = require('blessed'),
 	screen = blessed.screen();
 
 // first run is to initally draw the table.
-var firstRun = true;
+var runs = 0;
 tickers = [];
 /*
 133 - ES (S&P500)
@@ -14,37 +14,34 @@ tickers = [];
 318 - YM (DOW)
 8478 - BTC (BITCOIN)
 */
-futureIDs = [8478]; //133, 146, 8314, 318,
+futureIDs = [133, 146, 8314, 318, 8478]; //133, 146, 8314, 318, 8478
 var displayData = [];
 
-// table = contrib.table({
-// 	keys: true,
-// 	vi: true,
-// 	fg: 'white',
-// 	selectedFg: 'white',
-// 	selectedBg: 'blue',
-// 	interactive: true,
-// 	label: 'Futures',
-// 	width: '80%',
-// 	height: '80%',
-// 	border: { type: 'line', fg: 'cyan' },
-// 	columnSpacing: 5,
-// 	columnWidth: [8, 8, 8, 8, 8, 8, 8],
-// });
+var grid = new contrib.grid({ rows: 1, cols: 2, screen: screen });
 
-// table.focus();
-// screen.append(table);
+futuresTable = contrib.table({
+	keys: true,
+	vi: true,
+	fg: 'white',
+	selectedFg: 'white',
+	selectedBg: 'blue',
+	interactive: true,
+	label: 'Futures',
+	width: '50%',
+	height: '100%',
+	border: { type: 'line', fg: 'cyan' },
+	columnSpacing: 5,
+	columnWidth: [8, 8, 8, 8, 8, 8, 8],
+});
 
-// screen.key(['escape', 'q', 'C-c'], function (ch, key) {
-// 	return process.exit(0);
-// });
+futuresTable.focus();
+screen.append(futuresTable);
 
-// table.setData({
-// 	headers: ['Symbol', 'Last', 'High', 'Low', 'Change', 'Change %', 'Time'],
-// 	data: displayData,
-// });
+screen.key(['escape', 'q', 'C-c'], function (ch, key) {
+	return process.exit(0);
+});
 
-// screen.render();
+screen.render();
 
 // ------------------- STOCK/ETF SECTION --------------
 
@@ -66,6 +63,7 @@ async function futuresQuote(futureID) {
 		`https://www.cmegroup.com/CmeWS/mvc/Quotes/Future/${futureID}/G` //&_t=${unixTime}
 	);
 	var response = future.data.quotes[0];
+	//console.log(response.updated);
 	var quote = [
 		response.code,
 		response.last,
@@ -89,26 +87,32 @@ async function futuresQuote(futureID) {
 			displayData.push(quote);
 		}
 	}
-	console.log(displayData);
+	return 'done';
 }
+
 // run quote getters
-//var futureID = '133'; //snp 500 - /ES
 
 updateTable();
 
 // ---------------- ACCESSORY FUNCTIONS ---------------------------
 function updateTable() {
-	sleep(2000).then(() => {
+	ms = 1000;
+	if (runs > 1) {
+		ms = 20000;
+	}
+	sleep(ms).then(() => {
 		futureIDs.forEach((id) => {
 			futuresQuote(id);
 		});
-		// table.setData({
-		// 	headers: ['Symbol', 'Last', 'High', 'Low', 'Change', 'Change %', 'Time'],
-		// 	data: displayData,
-		// });
-		// screen.render();
+		displayData.sort();
+		futuresTable.setData({
+			headers: ['Symbol', 'Last', 'High', 'Low', 'Change', 'Change %', 'Time'],
+			data: displayData,
+		});
+		screen.render();
 		updateTable();
 	});
+	runs++;
 }
 
 function sleep(milliseconds) {
