@@ -14,22 +14,21 @@ tickers = [];
 318 - YM (DOW)
 8478 - BTC (BITCOIN)
 */
-futureIDs = [133, 146, 8314, 318, 8478]; //133, 146, 8314, 318, 8478
+futureIDs = [133, 146, 8314, 318];
 var displayData = [];
 
 var grid = new contrib.grid({ rows: 1, cols: 2, screen: screen });
 
 futuresTable = contrib.table({
-	keys: true,
-	vi: true,
+	//keys: true,
 	fg: 'white',
 	selectedFg: 'white',
-	selectedBg: 'blue',
-	interactive: true,
+	selectedBg: 'clear',
+	//interactive: true,
 	label: 'Futures',
-	width: '50%',
+	width: '100%',
 	height: '100%',
-	border: { type: 'line', fg: 'cyan' },
+	border: { type: 'line', fg: 'green' },
 	columnSpacing: 5,
 	columnWidth: [8, 8, 8, 8, 8, 8, 8],
 });
@@ -87,7 +86,13 @@ async function futuresQuote(futureID) {
 			displayData.push(quote);
 		}
 	}
-	return 'done';
+
+	displayData.sort();
+	futuresTable.setData({
+		headers: ['Symbol', 'Last', 'High', 'Low', 'Change', 'Change %', 'Updated'],
+		data: displayData,
+	});
+	screen.render();
 }
 
 // run quote getters
@@ -98,18 +103,12 @@ updateTable();
 function updateTable() {
 	ms = 1000;
 	if (runs > 1) {
-		ms = 20000;
+		ms = 1000;
 	}
 	sleep(ms).then(() => {
 		futureIDs.forEach((id) => {
 			futuresQuote(id);
 		});
-		displayData.sort();
-		futuresTable.setData({
-			headers: ['Symbol', 'Last', 'High', 'Low', 'Change', 'Change %', 'Time'],
-			data: displayData,
-		});
-		screen.render();
 		updateTable();
 	});
 	runs++;
